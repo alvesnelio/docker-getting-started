@@ -10,37 +10,37 @@
 > Criação do Dockerfile com as seguintes configurações.
 
 ```
-# syntax=docker/dockerfile:1
-FROM node:12-alpine
-RUN apk add --no-cache python g++ make
-WORKDIR /app
-COPY . .
-RUN yarn install --production
-CMD ["node", "src/index.js"]
+    # syntax=docker/dockerfile:1
+    FROM node:12-alpine
+    RUN apk add --no-cache python g++ make
+    WORKDIR /app
+    COPY . .
+    RUN yarn install --production
+    CMD ["node", "src/index.js"]
 ```
 
-### Subindo aplicação no localhost.
+### Subindo aplicação "localhost do docker started".
 
 > Para visualizar a aplicação no seu navegador.
 
 - Executar o comando na pasta da aplicação. `docker run -dp 3000:3000 getting-started`
 - Acessar a aplicação `http://localhost:3000/`
 
-#### Atualização de app | images.
+### Atualização de app | images.
 
 > Para atualizar um app em execução precisamos recriar este container e para a recriação do mesmo é necessário o matar e depois levantar novamente.
 
 - Caso o container esteja em execução você precisa derrubar o mesmo: `docker container rm -f [id-do-container]`
 - Buildar o docker: `docker build -t getting-started .`
-- Iniar o container que foi derrubado: `docker run -dp 3000:3000 getting-started`
-#### Publicando imagem no docker hub.
+- Iniciar o container que foi derrubado: `docker run -dp 3000:3000 getting-started`
+### Publicando imagem no docker hub.
 
 > Publicar imagem no docker hub é como se fosse um git de images do docker.
 
 - Criar uma conta de acesso ao docker hub.
 - Criar uma imagem de teste chamada `alvesnelio/getting-started`.
 - Logar no docker hub da maquina local.
-- Criar uma tag da imagem desejada, de preferencia algo como `docker tag getting-started USER-NAME-DOCKER-HUB/getting-starte`
+- Criar uma tag da imagem desejada, de preferencia algo como `docker tag getting-started [user-name-docker-hub]/getting-starte`
 - Públicar imagem no docker hub;
 
 > Para testar a imagem, só preciso acessar o dockerlab e baixar a imagem do docker hub. Exemplo:
@@ -55,10 +55,10 @@ CMD ["node", "src/index.js"]
 ```
 Volumes:
 
-OS volume fornecem a capacidade de conectar caminhos especificos do sistema de arquivos do container 
-de volta a maquina host. Se um diretorio no container for montado, as alterações nesse diretorio 
-também serão vistas na maquina host. Se montarmos esse mesmo diretorio nas reinicializações do container 
-veremos os mesmos arquivos.
+Os volume fornecem a capacidade de conectar caminhos especificos do sistema de arquivos do 
+container de volta a maquina host. Se um diretorio no container for montado, as alterações 
+nesse diretorio também serão vistas na maquina host. Se montarmos esse mesmo diretorio 
+nas reinicializações do container veremos os mesmos arquivos.
 ```
 
 - Para criar uma persistencia de dados no container será necessáro a criação de volumes e também será necessário vincular estes volumes com o container.
@@ -71,7 +71,7 @@ veremos os mesmos arquivos.
   - `docker run -dp [portas-container:portas-container] -v [nome-volume]:[local-do-volume-no-container-em-execucao] [nome-container]`.
   - Exemplo: `docker run -dp 3000:3000 -v todo-db:/etc/todos getting-started`.
 - Inspecionar volume 
-  - `docker volume inspect ***id-container***`
+  - `docker volume inspect [id-container]`
 
 #### Montagem de ligação (Use bind mounts)
 
