@@ -55,16 +55,23 @@ CMD ["node", "src/index.js"]
 ```
 Volumes:
 
-OS volume fornecem a capacidade de conectar caminhos especificos do sistema de arquivos do container de volta a maquina host. Se um diretorio no container for montado, as alterações nesse diretorio também serão vistas na maquina host. Se montarmos esse mesmo diretorio nas reinicializações do container veremos os mesmos arquivos.
+OS volume fornecem a capacidade de conectar caminhos especificos do sistema de arquivos do container 
+de volta a maquina host. Se um diretorio no container for montado, as alterações nesse diretorio 
+também serão vistas na maquina host. Se montarmos esse mesmo diretorio nas reinicializações do container 
+veremos os mesmos arquivos.
 ```
 
 - Para criar uma persistencia de dados no container será necessáro a criação de volumes e também será necessário vincular estes volumes com o container.
 
-- Criar volume. `docker volume create ***nome-exemplo-volume***`.
-- Após a criação do volume, verifique se o container que deseja vincular o volume se encontra em execução. Caso se encontra em execução sera necessário matar o container.  `docker container rm -f ***id-container***`.
-- Reinicie o container e adicionae o volume no mesmo container. `docker run -dp 3000:3000 -v ***nome-exemplo-volume***:***local-de-armazenamento-do-volume-no-container-em-execucao*** ***nome-container***`.
+- Criar volume. 
+  - `docker volume create [nome-de-exemplo-do-volume`.
+- Após a criação do volume, verifique se o container que deseja vincular o volume se encontra em execução. Caso se encontra em execução sera necessário matar o container.  
+  - `docker container rm -f [id-container]`.
+- Reinicie o container e adicionae o volume no mesmo container. 
+  - `docker run -dp [portas-container:portas-container] -v [nome-volume]:[local-do-volume-no-container-em-execucao] [nome-container]`.
   - Exemplo: `docker run -dp 3000:3000 -v todo-db:/etc/todos getting-started`.
-- Inspecionar volume `docker volume inspect ***id-container***`
+- Inspecionar volume 
+  - `docker volume inspect ***id-container***`
 
 #### Montagem de ligação (Use bind mounts)
 
