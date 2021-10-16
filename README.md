@@ -25,7 +25,7 @@ CMD ["node", "src/index.js"]
 
 > levantar container `getting-started` com configurações do simples do Dockerfile no `localhost` da sua maquina.
 
-- Noma da imagem do container: `getting-started`
+- Nome da imagem do container: `getting-started`
 - Portas de estudo: `3000`
 - Username docker hub: `alvesnelio`
 - Acessar o diretorio baixado do repositório oficial do docker.
