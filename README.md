@@ -28,6 +28,7 @@ CMD ["node", "src/index.js"]
 - Nome da imagem do container: `getting-started`
 - Portas de estudo: `3000`
 - Username docker hub: `alvesnelio`
+- Nome da rede: `todo-app`
 - Acessar o diretorio baixado do repositório oficial do docker.
 - Executar o comando `docker run -dp 3000:3000 [imagem-do-container]`
 - Acessar a aplicação `http://localhost:3000/`
@@ -51,14 +52,15 @@ CMD ["node", "src/index.js"]
 - Logar no docker hub da maquina local.
   - Exemplo: `docker login -u alvesnelio`
 - Criar uma tag da imagem desejada.
-  - Exemplo: `docker tag imagem-do-container alvesnelio/getting-started`
+  - Exemplo: `docker tag getting-started alvesnelio/getting-started`
 - Públicar imagem no docker hub;
   - Exemplo: `docker push alvesnelio/getting-started`
 
 > Para testar se tudo ocorreu com sucesso, é preciso acessar o dockerlab e baixar a imagem do docker hub.
 
 - Rodar o comando de execução da imagem especificando apenas o location da imagem.
-- `docker run-dp [portas]:[portas] [username-dockerhub]/[imagem-do-container]`
+- Acessar a plataforma [Play With Docker](https://labs.play-with-docker.com/)
+- Executar o comando: `docker run -dp 3000:3000 alvesnelio/getting-started`
 
 ## Persistindo Banco de dados.
 
@@ -150,3 +152,85 @@ Listening on port 300
 - `docker build -t [imagem-do-container] .`
 
 ## Aplicativos de vários contêineres
+
+> Para se trabalhar com multiplos conteineres em comunicação é necessário a existencia de uma rede. </br>
+> Porque os containers conseguem se comunicar apenas se estiverem conectados a mesma rede.
+
+*Observação* </br>
+_Se dois contêineres estiverem na mesma rede, eles podem se comunicar. Se não forem, não podem._
+
+### Criar rede comunicação de conteiners.
+
+- Para criar uma rede de comunicação de conteiners é necessário executar o seguinte comando. `docker network create [nome-da-rede]`
+  - `docker network create todo-app`
+
+#### Iniciando o MySQL
+
+> Este MySQL tem como foco apenas para rede de estudo do todo-list. (Projeto do próprio docker).
+- Inicie um contêiner MySQL e conecte-o à rede. Também definiremos algumas variáveis ​​de ambiente que o banco de dados usará para inicializar o banco de dados (consulte a seção “Variáveis ​​de ambiente” na lista do [MySQL Docker Hub](https://hub.docker.com/_/mysql/) ).
+```
+docker run -d \
+    --network todo-app --network-alias mysql \
+    -v todo-mysql-data:/var/lib/mysql \
+    -e MYSQL_ROOT_PASSWORD=secret \
+    -e MYSQL_DATABASE=todos \
+    mysql:5.7
+```
+- Para confirmar se o banco de dados está instalado e funcionando, conecte-se ao banco de dados e verifique se ele está conectado.
+  - Execute o comando `docker exec -it <mysql-container-id> mysql -u root -p`
+- Quando a solicitação de senha for exibida, digite secret . No shell do MySQL, liste os bancos de dados e verifique se você vê o todosbanco de dados.
+  - Execute o comando `SHOW DATABASES;`
+
+#### Conectando app ao MYSQl.
+
+> Para conectar ao app todo list, segue a documentação que fala sobre o [nicolaka/netshoot](https://docs.docker.com/get-started/07_multi_container/#connect-to-mysql)
+
+- Execute o seguinte comando: `docker run -it --network todo-app nicolaka/netshoot`
+- Após levantar o container do nicolaka/netshoot
+  - Execute o seguinte comando: `dig mysql`
+
+- Resposta esperada
+```
+; <<>> DiG 9.14.1 <<>> mysql
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 32162
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;mysql.				IN	A
+
+;; ANSWER SECTION:
+mysql.			600	IN	A	172.23.0.2 <<<##### IP do container mysql. #####>>>
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.11#53(127.0.0.11)
+;; WHEN: Tue Oct 01 23:47:24 UTC 2019
+;; MSG SIZE  rcvd: 44
+```
+
+##### Conexão do app todo-list
+
+> Para conectar o app todo-list com o mysql é necessário levantar o container com os parametros de conexão.
+
+- Checar se o container `todo-list` | `getting-started` se encontra em execução.
+  - Caso esteja em execução será necessario remover o mesmo.
+- Levantar o container `todo-list` | `getting-started`
+```
+docker run -dp 3000:3000 \
+   -w /app -v "$(pwd):/app" \
+   --network todo-app \
+   -e MYSQL_HOST=mysql \
+   -e MYSQL_USER=root \
+   -e MYSQL_PASSWORD=secret \
+   -e MYSQL_DB=todos \
+   node:12-alpine \
+   sh -c "yarn install && yarn run dev"
+```
+- Se olharmos os logs do container (docker logs <container-id>), devemos ver uma mensagem indicando que ele está usando o banco de dados mysql.
+- Abra o aplicativo em seu navegador e adicione alguns itens à sua lista de tarefas.
+- Conecte-se ao banco de dados mysql e prove que os itens estão sendo gravados no banco de dados.
+  - Execute o comando: `docker exec -it <mysql-container-id> mysql -p todos`
+  - Após a conexão no container mysql execute o comando abaixo e visualizr os itens cadastrados na todo-list
+  - `SELECT * FROM todo_items;`
+
