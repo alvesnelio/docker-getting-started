@@ -1,4 +1,4 @@
-# Aplicação
+# Getting Started com Docker
 
 > Aplicação de estudo de Docker, ela foi baixada do repositorio `docker/getting-started/app` </br> do github com finalidade de aprendizagem do docker.
 
@@ -234,3 +234,4 @@ docker run -dp 3000:3000 \
   - Após a conexão no container mysql execute o comando abaixo e visualizr os itens cadastrados na todo-list
   - `SELECT * FROM todo_items;`
 
+# Getting Started com Docker Compose
