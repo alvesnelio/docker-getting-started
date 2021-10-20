@@ -235,3 +235,67 @@ docker run -dp 3000:3000 \
   - `SELECT * FROM todo_items;`
 
 # Getting Started com Docker Compose
+
+- O que é docker-compose?
+  - Docker Compose é uma ferramenta que foi desenvolvida para ajudar a definir e compartilhar aplicativos de vários contêineres. Com o Compose, podemos criar um arquivo YAML para definir os serviços e, com um único comando, podemos girar ou destruir tudo.
+
+- Como verificar se o docker-compose esta instalado?
+  - Execute o comando: `docker-compose version`
+
+## Criar arquivo docker-compose.
+
+- 1º Na raiz do projeto é recomendavel criar um arquivo chamado `docker-compose.yml`
+- No arquivo `docker-compose.yml`, começaremos definindo a versão do esquema. Na maioria dos casos, é melhor usar a versão mais recente com suporte. Você pode consultar a (referência do arquivo Compose)[https://docs.docker.com/compose/compose-file/] para as versões atuais do esquema e a matriz de compatibilidade.
+
+#### Exemplo de configuração de um arquivo docker-compose.yml
+
+```
+# Ultima versão recente utilizada como referencia.
+version: "3.7"
+
+# Serviços a serem criados para esta aplicação
+services:
+  #Criação do serviço de aplicação, pode ser qualquer nome.
+  app:
+    # Imagem do serviço, pode ser node, nginx, php e imagens do docker hub
+    image: node:12-alpine
+
+    #Comando a ser executado pelo sh do container quando o mesmo for inicializado.
+    command: sh -c "yarn install && yarn run dev"
+    
+    # Portas de acesso da aplicação no navegador. [https://localhost:3000]
+    ports:
+      - 3000:3000
+
+    # Pasta de trabalho da aplicação
+    working_dir: /app
+
+    # Volumes da aplicação vinculando a pasta raiz do server com a pasta de trabalho da aplicação
+    volumes:
+      - ./:/app
+
+    # Configurações padrões de acesso ao serviço de mysql.
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+
+  # Criação do serviço de aplicação, pode ser qualquer nome.
+  mysql:
+    # Imagem do serviço
+    image: mysql:5.7
+
+    # Volumes do serviço, referente a documentação dos volumes superiores
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+
+    # Variaveis de configurações do serviço criado.
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todos
+
+# Volume superior criado para ser utilizado nos volumes inferiores dos services necessários.
+volumes:
+  todo-mysql-data:
+```
