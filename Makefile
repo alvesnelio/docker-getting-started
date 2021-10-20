@@ -15,12 +15,22 @@ MYSQL_ROOT_PASSWORD=MYSQL_PASSWORD
 MYSQL_DATABASE=`todos`
 MYSQL_DB=MYSQL_DATABASE
 
+#Comandos de docker composer
+docker-compose-up:
+	@$(MAKE) docker-compose-up-todo-list
+.PHONY: docker-compose-up
+
+docker-compose-up-todo-list:
+	@echo "${RESET}${BLUE}Levantando o container ${GREEN}getting-started | Mysql ${YELLOW} http:localhost:3000${RESET}"
+	@docker-compose -f ./docker-compose.yml up -d
+.PHONY: docker-compose-up-todo-list
+
 #Comandos de docker
 docker-up-basic:
 	@$(MAKE) docker-up-localhost-80
 	@$(MAKE) docker-up-localhost-mysql
 	@$(MAKE) docker-up-localhost-3000
-# 	@$(MAKE) docker-op-localhost-mysql-nicolaka-netshoot
+# 	@$(MAKE) docker-up-localhost-mysql-nicolaka-netshoot
 .PHONY: up-basic
 
 docker-up-localhost-mysql:
@@ -28,7 +38,7 @@ docker-up-localhost-mysql:
 	@docker run -d --network todo-app --network-alias mysql -v todo-mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=todos mysql:5.7;
 .PHONY: docker-up-localhost-mysql
 
-docker-op-localhost-mysql-nicolaka-netshoot:
+docker-up-localhost-mysql-nicolaka-netshoot:
 	@echo "${RESET}${BLUE}Levantando o container para solução de problemas e depuração de rede.${RESET}"
 	@docker run -it --network todo-app nicolaka/netshoot;
 .PHONY: docker-up-localhost-mysql
